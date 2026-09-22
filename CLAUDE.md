@@ -20,6 +20,10 @@
 - A adequação ao AdSense é estrutural — catálogo, indexação, 404, duplicação. Ela **nunca aparece no texto em si**. Não escrever frase nenhuma que explique ou defenda a natureza do site ("aqui não é um agregador", "somos especializados em casa, diferente de sites genéricos", "selecionamos com cuidado, não é uma lista qualquer"). Isso soa como o site se justificando sem ninguém ter perguntado — estranho pra quem lê. Se o conteúdo é bom e focado em casa, isso já fala por si; não precisa dizer.
 - Sem jargão de marketing ("imperdível", "revolucionário", "prepare-se para se surpreender", "melhor do mercado", "não pode ficar de fora"). Escrever como alguém explicando pra um amigo, não como anúncio.
 
+## Tabelas
+
+- Toda tabela do admin tem que ter paginação, mostrando 20 itens por página.
+
 ## Não mexer
 
 - Artigos `JORNADA` do blog (profundidade + disclosure de afiliado).

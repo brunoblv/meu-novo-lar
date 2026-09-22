@@ -1,16 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
-import { prisma, Destino, StatusLanding } from "@/lib/database";
+import { prisma } from "@/lib/database";
+import { WHERE_POST_PUBLICO } from "@/lib/modo-site";
 import { Button } from "@/components/ui/button";
-import { descontoPercentual, primeiraImagem, HOME_CATEGORIAS, produtoVisivelNoSite, deduplicarCatalogo } from "@/lib/produtos";
 import { CAPA_EDITORIAL, resolverCapa } from "@/lib/conteudo/capa";
 import { FERRAMENTAS } from "@/lib/ferramentas";
-import { NewsletterForm } from "./newsletter-form";
-import { dataCivil, isoDataCivil } from "@/lib/vitrine/data";
-
-function formatCurrency(value: number) {
-  return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
-}
 
 function readingTime(text: string) {
   const words = text.trim().split(/\s+/).length;
@@ -18,28 +12,12 @@ function readingTime(text: string) {
 }
 
 export default async function HomePage() {
-  const [posts, produtos, vitrineHoje] = await Promise.all([
-    prisma.post.findMany({
-      where: { status: "PUBLICADO", tipo: "JORNADA" },
-      include: { capa: true },
-      orderBy: { publicadoEm: "desc" },
-      take: 3,
-    }),
-    prisma.produto.findMany({
-      where: { ativo: true, destino: Destino.MEU_NOVO_LAR, categoria: { in: HOME_CATEGORIAS } },
-      orderBy: { criadoEm: "desc" },
-      take: 24,
-    }),
-    prisma.landingDiaria.findFirst({
-      where: { destino: Destino.MEU_NOVO_LAR, status: StatusLanding.PUBLICADA },
-      orderBy: { data: "desc" },
-      select: { slug: true, headline: true, data: true },
-    }),
-  ]);
-
-  const deals = deduplicarCatalogo(produtos.filter(produtoVisivelNoSite))
-    .filter((produto) => descontoPercentual(produto) !== null)
-    .slice(0, 3);
+  const posts = await prisma.post.findMany({
+    where: WHERE_POST_PUBLICO,
+    include: { capa: true },
+    orderBy: { publicadoEm: "desc" },
+    take: 3,
+  });
 
   return (
     <>
@@ -52,19 +30,19 @@ export default async function HomePage() {
           </h1>
           <div className="mt-4 max-w-md space-y-3 text-[15px] leading-relaxed text-muted-foreground">
             <p className="font-semibold text-foreground">
-              Inspiração, dicas, produtos selecionados e ferramentas úteis para o dia a dia da sua casa.
+              Inspiração, dicas e ferramentas úteis para o dia a dia da sua casa.
             </p>
             <p>
               O Meu Novo Lar é uma publicação especializada em casa e lar, criada para ajudar você a encontrar
-              boas ideias, descobrir produtos e tornar cada ambiente mais bonito, funcional e prático.
+              boas ideias e tornar cada ambiente mais bonito, funcional e prático.
             </p>
           </div>
           <div className="mt-7 flex flex-wrap gap-3">
             <Button size="lg" render={<Link href="/blog" />} className="px-6">
               Explorar conteúdos
             </Button>
-            <Button size="lg" variant="outline" render={<Link href="/ofertas" />} className="px-6">
-              Ver ofertas
+            <Button size="lg" variant="outline" render={<Link href="/ferramentas" />} className="px-6">
+              Ver ferramentas
             </Button>
           </div>
         </div>
@@ -104,21 +82,11 @@ export default async function HomePage() {
             ambiente ou planejar uma reforma.
           </p>
           <p>
-            Quando um produto pode ser útil para colocar uma ideia em prática, também apresentamos algumas
-            opções encontradas em lojas parceiras. Os produtos são selecionados de acordo com o contexto de cada
-            conteúdo, e preços e disponibilidade podem variar.
-          </p>
-          <p>
             Também criamos ferramentas gratuitas para ajudar em tarefas práticas, como calcular a quantidade de
             tinta ou piso necessária para um ambiente.
           </p>
           <p>
-            O Meu Novo Lar pode receber receita por meio de publicidade e de links de recomendação presentes em
-            alguns conteúdos. Isso nos ajuda a manter o projeto e continuar produzindo novos materiais para quem
-            gosta de cuidar da casa.
-          </p>
-          <p>
-            Conheça mais sobre o projeto e nossos critérios editoriais na página{" "}
+            Conheça mais sobre o projeto na página{" "}
             <Link href="/sobre" className="font-medium text-foreground underline">
               Sobre
             </Link>
@@ -137,25 +105,6 @@ export default async function HomePage() {
           </p>
         </div>
       </div>
-
-      {vitrineHoje && (
-        <div className="mx-auto max-w-[1200px] px-5 pb-6 sm:px-10">
-          <Link
-            href={`/vitrine/${vitrineHoje.slug}`}
-            className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-sage/40 bg-secondary px-5 py-4"
-          >
-            <div>
-              <div className="text-[11px] font-bold tracking-[0.12em] text-muted-foreground">
-                {isoDataCivil(vitrineHoje.data) === isoDataCivil(dataCivil()) ? "OFERTAS DO DIA" : "ÚLTIMA VITRINE"}
-              </div>
-              <div className="mt-1 font-heading text-lg font-semibold text-foreground">
-                {vitrineHoje.headline ?? "A vitrine de hoje está no ar"}
-              </div>
-            </div>
-            <span className="text-sm font-semibold text-primary">Ver seleção →</span>
-          </Link>
-        </div>
-      )}
 
       {/* Conteúdos recentes */}
       {posts.length > 0 && (
@@ -187,53 +136,6 @@ export default async function HomePage() {
         </div>
       )}
 
-      {/* Ofertas */}
-      {deals.length > 0 && (
-        <div id="ofertas" className="bg-secondary px-5 py-14 sm:px-10">
-          <div className="mx-auto max-w-[1200px]">
-            <div className="mb-2 text-[11px] font-bold tracking-[0.12em] text-muted-foreground">OFERTAS QUE ENCONTRAMOS</div>
-            <div className="mb-7 flex flex-wrap items-baseline justify-between gap-2">
-              <h2 className="font-heading text-2xl font-semibold text-foreground sm:text-[26px]">Boas oportunidades para sua casa</h2>
-              <span className="text-xs font-medium text-muted-foreground">Atualizado hoje</span>
-            </div>
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
-              {deals.map((produto) => {
-                const desconto = descontoPercentual(produto);
-                const imagem = primeiraImagem(produto);
-                return (
-                  <Link key={produto.id} href={`/produtos/${produto.slug}`} className="block overflow-hidden rounded-xl bg-card">
-                    <div className="flex aspect-square items-center justify-center bg-[repeating-linear-gradient(45deg,var(--background),var(--background)_8px,var(--sand)_8px,var(--sand)_16px)] p-3 sm:p-4">
-                      {imagem ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img src={imagem} alt={produto.nome} className="max-h-full max-w-full object-contain" />
-                      ) : (
-                        <span className="font-mono text-[11px] text-muted-foreground">produto</span>
-                      )}
-                    </div>
-                    <div className="p-4">
-                      <div className="mb-2 flex items-center justify-end">
-                        {desconto !== null && (
-                          <span className="rounded-full bg-olive px-2 py-0.5 text-xs font-bold text-white">
-                            -{desconto}%
-                          </span>
-                        )}
-                      </div>
-                      <div className="mb-1.5 line-clamp-2 text-sm font-semibold text-foreground">{produto.nome}</div>
-                      <div className="flex items-baseline gap-2">
-                        {produto.precoOriginal && (
-                          <span className="text-xs text-muted-foreground line-through">{formatCurrency(Number(produto.precoOriginal))}</span>
-                        )}
-                        <span className="text-lg font-bold text-foreground">{formatCurrency(Number(produto.precoAtual))}</span>
-                      </div>
-                    </div>
-                  </Link>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Ferramentas */}
       <div className="mx-auto max-w-[1200px] px-5 py-16 sm:px-10">
         <div className="mb-2 text-[11px] font-bold tracking-[0.12em] text-muted-foreground">FERRAMENTAS</div>
@@ -252,16 +154,6 @@ export default async function HomePage() {
         </div>
       </div>
 
-      {/* Newsletter */}
-      <div className="border-t border-border px-5 py-11 sm:px-10">
-        <div className="mx-auto flex max-w-[1200px] flex-wrap items-center justify-between gap-6">
-          <div>
-            <div className="mb-1 font-heading text-lg font-semibold text-foreground">Receba boas ideias para sua casa</div>
-            <div className="text-sm text-muted-foreground">Dicas, ferramentas e ofertas selecionadas, sem spam.</div>
-          </div>
-          <NewsletterForm />
-        </div>
-      </div>
     </>
   );
 }

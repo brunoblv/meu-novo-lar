@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { prisma } from "@/lib/database";
+import { SITE_SOMENTE_BLOG, WHERE_POST_PUBLICO } from "@/lib/modo-site";
 import type { CategoriaEditorial, TipoPost } from "@/lib/generated/prisma/enums";
 import { produtoVisivelNoSite } from "@/lib/produtos";
 import { resolverCapa } from "@/lib/conteudo/capa";
@@ -14,8 +15,7 @@ interface Props {
 export async function PostsRelacionados({ postId, tipo, categoriaEditorial }: Props) {
   const posts = await prisma.post.findMany({
     where: {
-      status: "PUBLICADO",
-      tipo,
+      ...(SITE_SOMENTE_BLOG ? WHERE_POST_PUBLICO : { status: "PUBLICADO" as const, tipo }),
       categoriaEditorial,
       id: { not: postId },
     },

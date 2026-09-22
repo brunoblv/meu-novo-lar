@@ -1,11 +1,12 @@
 import Link from "next/link";
-import { prisma, Destino, StatusPost, TipoPost } from "@/lib/database";
+import { prisma, Destino } from "@/lib/database";
+import { SITE_SOMENTE_BLOG, WHERE_POST_PUBLICO } from "@/lib/modo-site";
 import { resolverCapa } from "@/lib/conteudo/capa";
 import { HOME_CATEGORIAS, primeiraImagem, produtoVisivelNoSite } from "@/lib/produtos";
 
 export const metadata = {
   title: "Buscar — Meu Novo Lar",
-  description: "Busque artigos e produtos de casa no Meu Novo Lar.",
+  description: "Busque artigos de casa no Meu Novo Lar.",
 };
 
 const LIMITE = 20;
@@ -23,8 +24,7 @@ export default async function BuscarPage({
     ? await Promise.all([
         prisma.post.findMany({
           where: {
-            status: StatusPost.PUBLICADO,
-            tipo: TipoPost.JORNADA,
+            ...WHERE_POST_PUBLICO,
             OR: [
               { titulo: { contains: q, mode: "insensitive" } },
               { resumo: { contains: q, mode: "insensitive" } },
@@ -34,7 +34,7 @@ export default async function BuscarPage({
           orderBy: { publicadoEm: "desc" },
           take: LIMITE,
         }),
-        prisma.produto.findMany({
+        SITE_SOMENTE_BLOG ? Promise.resolve([]) : prisma.produto.findMany({
           where: {
             ativo: true,
             destino: Destino.MEU_NOVO_LAR,
@@ -53,7 +53,7 @@ export default async function BuscarPage({
     <div className="mx-auto w-full max-w-[800px] px-5 py-14 sm:px-10">
       <h1 className="font-heading text-4xl font-semibold text-foreground">Buscar</h1>
       <p className="mt-2 text-[15px] text-muted-foreground">
-        Artigos editoriais e produtos de casa cadastrados no site.
+        Artigos do Meu Novo Lar.
       </p>
 
       <form action="/buscar" method="get" role="search" className="mt-8">
@@ -79,7 +79,7 @@ export default async function BuscarPage({
       </form>
 
       {!q ? (
-        <p className="mt-10 text-sm text-muted-foreground">Digite um termo para ver artigos e produtos.</p>
+        <p className="mt-10 text-sm text-muted-foreground">Digite um termo para ver artigos.</p>
       ) : posts.length === 0 && produtos.length === 0 ? (
         <p className="mt-10 text-sm text-muted-foreground">
           Nenhum resultado para “{q}”. Tente outra palavra ou veja o{" "}

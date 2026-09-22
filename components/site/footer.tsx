@@ -30,9 +30,6 @@ export function SiteFooter() {
           <div className="text-[11px] font-bold tracking-[0.09em] text-secondary/70">CONTEÚDO</div>
           <div className="mt-3 flex flex-col gap-2 text-sm">
             <Link href="/blog" className="hover:text-background">Blog</Link>
-            <Link href="/produtos" className="hover:text-background">Produtos</Link>
-            <Link href="/ofertas" className="hover:text-background">Ofertas</Link>
-            <Link href="/vitrine" className="hover:text-background">Ofertas do dia</Link>
             <Link href="/buscar" className="hover:text-background">Buscar</Link>
           </div>
         </div>

@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { prisma } from "@/lib/database";
+import { SITE_SOMENTE_BLOG, WHERE_POST_PUBLICO } from "@/lib/modo-site";
 
 // Rota sem segmento dinâmico — sem isso o Next pode otimizar a resposta como
 // estática no build e travar o redirecionamento sempre no mesmo artigo.
@@ -13,7 +14,7 @@ export const dynamic = "force-dynamic";
  */
 export async function GET(request: NextRequest) {
   const post = await prisma.post.findFirst({
-    where: { status: "PUBLICADO", tipo: { in: ["JORNADA", "LISTA"] } },
+    where: SITE_SOMENTE_BLOG ? WHERE_POST_PUBLICO : { status: "PUBLICADO", tipo: { in: ["JORNADA", "LISTA"] } },
     orderBy: { publicadoEm: "desc" },
     select: { slug: true },
   });

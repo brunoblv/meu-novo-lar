@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/database";
+import { SITE_SOMENTE_BLOG, WHERE_POST_PUBLICO } from "@/lib/modo-site";
 import { CorpoDoPost } from "@/components/corpo-do-post";
 import { PostsRelacionados } from "@/components/site/posts-relacionados";
 import { resolverCapa } from "@/lib/conteudo/capa";
@@ -19,8 +20,8 @@ export default async function BlogPostPage({
   const { slug } = await params;
   const { o } = await searchParams;
 
-  const post = await prisma.post.findUnique({
-    where: { slug },
+  const post = await prisma.post.findFirst({
+    where: SITE_SOMENTE_BLOG ? { slug, ...WHERE_POST_PUBLICO } : { slug },
     include: {
       capa: true,
       autor: true,
@@ -109,8 +110,8 @@ export default async function BlogPostPage({
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const post = await prisma.post.findUnique({
-    where: { slug },
+  const post = await prisma.post.findFirst({
+    where: SITE_SOMENTE_BLOG ? { slug, ...WHERE_POST_PUBLICO } : { slug },
     include: { capa: true, produtos: { orderBy: { ordem: "asc" }, take: 1, include: { produto: true } } },
   });
   if (!post) return {};
