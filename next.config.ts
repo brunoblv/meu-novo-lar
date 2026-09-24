@@ -4,11 +4,11 @@ const isProd = process.env.NODE_ENV === "production";
 
 const csp = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://*.googlesyndication.com https://*.google.com https://*.g.doubleclick.net",
+  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://*.googlesyndication.com https://*.google.com https://*.g.doubleclick.net https://nap5k.com",
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https:",
   "font-src 'self' data:",
-  `connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com https://*.analytics.google.com https://*.googlesyndication.com https://*.google.com https://*.doubleclick.net${isProd ? "" : " ws: wss:"}`,
+  `connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com https://*.analytics.google.com https://*.googlesyndication.com https://*.google.com https://*.doubleclick.net https://nap5k.com${isProd ? "" : " ws: wss:"}`,
   "frame-src https://www.google.com https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://www.googletagmanager.com",
   "base-uri 'self'",
   "form-action 'self'",
