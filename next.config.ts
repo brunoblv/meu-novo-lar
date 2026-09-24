@@ -17,6 +17,13 @@ const csp = [
   ...(isProd ? ["upgrade-insecure-requests"] : []),
 ].join("; ");
 
+// O sw.js do Monetag importa este script no contexto do service worker.
+// A CSP da resposta do próprio worker precisa permitir essa origem.
+const serviceWorkerCsp = csp.replace(
+  "script-src 'self'",
+  "script-src 'self' https://3nbf4.com",
+);
+
 const securityHeaders = [
   { key: "X-Content-Type-Options", value: "nosniff" },
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
@@ -60,6 +67,10 @@ const nextConfig: NextConfig = {
     return [
       { source: "/", headers: securityHeaders },
       { source: "/:path*", headers: securityHeaders },
+      {
+        source: "/sw.js",
+        headers: [{ key: "Content-Security-Policy", value: serviceWorkerCsp }],
+      },
     ];
   },
   async redirects() {
