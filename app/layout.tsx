@@ -24,6 +24,10 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Meu Novo Lar",
   description: "Publicação sobre casa e lar: ideias, produtos selecionados e ferramentas para o dia a dia.",
+  other: {
+    "p:domain_verify": "5f28555bab48fbe0f0325e4cfbc18937",
+    monetag: "3515222322091310758f70f63a2e35e7",
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -33,9 +37,6 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${newsreader.variable} ${manrope.variable} ${geistMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >
-      <head>
-        <meta name="p:domain_verify" content="5f28555bab48fbe0f0325e4cfbc18937" />
-      </head>
       <body className="min-h-full flex flex-col font-sans">
         <Script
           id="ga-consent-default"
