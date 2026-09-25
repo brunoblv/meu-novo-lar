@@ -4,11 +4,11 @@ const isProd = process.env.NODE_ENV === "production";
 
 const csp = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://*.googlesyndication.com https://*.google.com https://*.g.doubleclick.net https://nap5k.com https://my.rtmark.net https://jhnwr.com",
+  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://*.googlesyndication.com https://*.google.com https://*.g.doubleclick.net",
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https:",
   "font-src 'self' data:",
-  `connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com https://*.analytics.google.com https://*.googlesyndication.com https://*.google.com https://*.doubleclick.net https://nap5k.com https://my.rtmark.net https://jhnwr.com${isProd ? "" : " ws: wss:"}`,
+  `connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com https://*.analytics.google.com https://*.googlesyndication.com https://*.google.com https://*.doubleclick.net${isProd ? "" : " ws: wss:"}`,
   "frame-src https://www.google.com https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://www.googletagmanager.com",
   "base-uri 'self'",
   "form-action 'self'",
@@ -16,13 +16,6 @@ const csp = [
   "frame-ancestors 'self'",
   ...(isProd ? ["upgrade-insecure-requests"] : []),
 ].join("; ");
-
-// O sw.js do Monetag importa este script no contexto do service worker.
-// A CSP da resposta do próprio worker precisa permitir essa origem.
-const serviceWorkerCsp = csp.replace(
-  "script-src 'self'",
-  "script-src 'self' https://3nbf4.com",
-);
 
 const securityHeaders = [
   { key: "X-Content-Type-Options", value: "nosniff" },
@@ -67,10 +60,6 @@ const nextConfig: NextConfig = {
     return [
       { source: "/", headers: securityHeaders },
       { source: "/:path*", headers: securityHeaders },
-      {
-        source: "/sw.js",
-        headers: [{ key: "Content-Security-Policy", value: serviceWorkerCsp }],
-      },
     ];
   },
   async redirects() {

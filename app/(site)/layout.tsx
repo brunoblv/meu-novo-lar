@@ -3,7 +3,6 @@ import { SiteHeader } from "@/components/site/header";
 import { SiteFooter } from "@/components/site/footer";
 import { CookieBanner } from "@/components/site/cookie-banner";
 import { Analytics } from "@/components/site/analytics";
-import { InPagePush } from "@/components/site/in-page-push";
 import { JsonLdSite } from "@/components/site/json-ld-site";
 
 /**
@@ -24,7 +23,6 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
       <SiteFooter />
       <CookieBanner />
       <Analytics />
-      <InPagePush />
       <JsonLdSite />
     </div>
   );
