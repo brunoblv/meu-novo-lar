@@ -7,5 +7,7 @@
 			"path": "../affiliate-hub"
 		}
 	],
-	"settings": {}
+	"settings": {
+		"WillLuke.nextjs.hasPrompted": true
+	}
 }
